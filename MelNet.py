@@ -40,7 +40,7 @@ def generating_from_disribution_new(miut1, sigmat1, alphat1):
                     ind = np.random.choice(np.arange(0, num_mixture),
                                            p=np.ravel([alpha_batch[i, j, :]]))
                     out[i, j] = np.random.normal(miu_batch[i, j, ind],
-                                                 0.4471 * sigma_batch[i, j, ind])
+                                                 sigma_batch[i, j, ind])
         output_tot = np.append(output_tot, out, axis=1)
         output_tot_batch_format = np.append(output_tot_batch_format, np.expand_dims(out, axis=0), axis=0)
     return output_tot, output_tot_batch_format
@@ -108,7 +108,6 @@ def FrequencyDelayedStack(freq_input_matrix, time_output, dim_f, dim_t, hidden_l
                 temp_out_lstm = lstm_freq_moudule(input11)[0] + temp_out_lstm
             tot_hidden = tf.concat([tot_hidden, temp_out_lstm], axis=2)
             scope.reuse_variables()  # the variables will be reused.
-    # output = tot_hidden + freq_input_matrix
     output = tot_hidden
     return output
 
