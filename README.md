@@ -22,7 +22,7 @@ Fs: 48[KHz] -> donwsampled to 24[KHz].
 
 
 ### Train:
-RMSPOP optimizer with lr: 7e-4 , momentum: 1e-4.
+RMSPOP optimizer with lr: 7e-4 , momentum: 0.9.
 Every 10 epochs learning rate was down in half-> lr/2
 Tested with batch size:16
 ### Generations (Current results):
