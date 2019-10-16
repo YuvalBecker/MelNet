@@ -240,10 +240,6 @@ def MelNET(dim_f, dim_t, hidden_layer=3, batch_norm=0):
     # calculating  frequencyDelayStack :
     out_freq = FrequencyDelayedStack(freq_input_matrix, time_output, dim_f, dim_t, hidden_layer)
     if batch_norm == 1:
-        out_freq = keras.layers.BatchNormalization()(out_freq, training=True)
-        mu = Conv2D(filters=mixture_num, kernel_size=(1, 1), activation='relu', padding='same')(
-            tf.expand_dims(out_freq, axis=3))
-    if batch_norm == 1:
         mu = keras.layers.BatchNormalization()(mu)
     sigma = Conv2D(filters=mixture_num, kernel_size=(1, 1), activation='relu', padding='same')(
         tf.expand_dims(out_freq, axis=3))
