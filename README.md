@@ -29,6 +29,9 @@ Tested with batch size:16
 ![](./images/generations.PNG)
 ### Time domain signal
 ![](./images/TimeSignal.png)
+### Audio generation
+![](./no_filt2222_08_57.wav)
+
 
 #### MelNet.py:
 - Graph creation:
