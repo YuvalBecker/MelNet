@@ -33,8 +33,7 @@ Tested with batch size:16
 sound of Ariana Grande (Unconditional)
 [SOUND](/no_filt2222_08_57.wav	) 
 
-#### MelNet.py:
-work flow:
+## How to use? 
 Main script: MelNET.py
 Trainning:
 - prepare data:
@@ -55,8 +54,12 @@ def create_data_train -> get path to wav files folder and creates mel spectrogra
 - generating sample by sample using GMM :
 
    def generating_from_disribution_new -> receive GMM model of the spectrogram and sample pixel distribution.
+   
+   def return_to_audio -> Receive a spectrogram and sampling rate, produces the audio signal.
+   
 
 
-** At the moment the generation process takes a lot of time, in the next few weeks intend to improve efficiency, and upload a better audio results after giving more training time.
+** At the moment the generation process takes a lot of time because  generation  is done pixel by pixel. In the next few weeks intend to improve efficiency.
+The audio results from generation are very noisy -> intend to train the model over larger dataset for longer time and update the results.
 
 
