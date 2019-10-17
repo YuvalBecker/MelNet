@@ -340,7 +340,7 @@ if __name__ == "__main__":
         col = col + 1
     new = np.zeros((dim_f1, dim_t1))
     for ii in range(batch_size1):
-        new = np.append(new, input_data2[ii, :, col1 - 20:col1 + 1], axis=1)
+        new = np.append(new, input_data2[ii, :, col1 :], axis=1)
     OUT = new[:, 50:]
     plt.figure(4)
     plt.imshow(OUT)
