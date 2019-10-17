@@ -34,19 +34,27 @@ sound of Ariana Grande (Unconditional)
 [SOUND](/no_filt2222_08_57.wav	) 
 
 #### MelNet.py:
+work flow:
+Main script: MelNET.py
+Trainning:
+- prepare data:
+making_mel_Spec.py
+
+def create_data_train -> get path to wav files folder and creates mel spectrogram
+
 - Graph creation:
 
-   def FrequencyDelayedStack 
+   def MelNET -> Main function creates the graph
 
-   def TimeDelayedStack
+   def FrequencyDelayedStack -> LSTM along the frequency axis (reusing weights)(input delay along frequnecy axis)
 
-   def MelNET -> creation of the graph.
+   def TimeDelayedStack -> LSTM along  frequency  and time axis (reusing weights)(input delay along time axis)
 
-   def gaussian_mixture_loss 
+   def gaussian_mixture_loss -> Gmm loss function
 
 - generating sample by sample using GMM :
 
-   def generating_from_disribution_new
+   def generating_from_disribution_new -> receive GMM model of the spectrogram and sample pixel distribution.
 
 
 ** At the moment the generation process takes a lot of time, in the next few weeks intend to improve efficiency, and upload a better audio results after giving more training time.
