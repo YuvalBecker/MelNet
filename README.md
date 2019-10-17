@@ -30,6 +30,7 @@ Tested with batch size:16
 ### Time domain signal
 ![](./images/TimeSignal.png)
 ### Audio generation
+[SOUND](/no_filt2222_08_57.wav)
 no_filt2222_08_57.wav (file inserted)
 
 
