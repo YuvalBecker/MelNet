@@ -30,8 +30,8 @@ Tested with batch size:16
 ### Time domain signal
 ![](./images/TimeSignal.png)
 ### Audio generation
-[SOUND](/no_filt2222_08_57.wav	)
-
+sound of Ariana Grande (Unconditional)
+[SOUND](/no_filt2222_08_57.wav	) 
 
 #### MelNet.py:
 - Graph creation:
@@ -49,7 +49,6 @@ Tested with batch size:16
    def generating_from_disribution_new
 
 
-** At the moment the generation process takes a lot of time, in the next few weeks intend to improve efficiency, and upload audio 
-results.
+** At the moment the generation process takes a lot of time, in the next few weeks intend to improve efficiency, and upload a better audio results after giving more training time.
 
 
