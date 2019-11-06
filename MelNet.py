@@ -181,8 +181,7 @@ def TimeDelayedStack(Time_input_matrix, Freq_timeStack_input, dim_f, dim_t, hidd
         tot_hidden_freq = tf.math.cumsum(tot_hidden_freq, axis=1)
     # Concatination of the 3 LSTMs outputs:
     tot_hidden = tf.transpose(tot_hidden, [0, 2, 1, 3])
-    CONCAT_3_RNN_OUPUT = tf.transpose(tf.concat([tot_hidden, tot_hidden_freq_flipped, tot_hidden_freq], axis=2),
-                                      (0, 2, 1, 3))
+    CONCAT_3_RNN_OUPUT =(tf.concat([tot_hidden, tot_hidden_freq_flipped, tot_hidden_freq], axis=3))
     return CONCAT_3_RNN_OUPUT
 
 def gaussian_mixture_loss(label_spect, alpha, mu, sigma, ):
@@ -221,15 +220,12 @@ def MelNET(dim_f, dim_t, hidden_layer=3, batch_norm=0):
         concat_output = keras.layers.BatchNormalization()(concat_output)
 
     # Define the matrics matmul weights variable:
-    matwh1 = tf.Variable(shape=[dim_t, 3 * dim_t], dtype=tf.float32,
-                         initial_value=tf.random_uniform(shape=[dim_t, 3 * dim_t], minval=0, maxval=1))
+    matwh1 = tf.Variable(shape=[3*hidden_layer,  hidden_layer], dtype=tf.float32,
+                         initial_value=tf.random_uniform(shape=[3*hidden_layer,  hidden_layer], minval=0, maxval=1))
     ##### Calculating over all hidden layers:
-    vec = concat_output[:, :, :, 0]
-    Tot_matrix = tf.expand_dims(tf.matmul(matwh1, vec), axis=1)
-    for i in range(1, hidden_layer):
-        vec = concat_output[:, :, :, i]
-        output_mat = tf.expand_dims(tf.matmul(matwh1, vec), axis=1)
-        Tot_matrix = tf.concat([Tot_matrix, output_mat], axis=1)
+    matwh1 = tf.Variable(shape=[3*hidden_layer,  hidden_layer], dtype=tf.float32,
+                         initial_value=tf.random_uniform(shape=[3*hidden_layer, hidden_layer], minval=0, maxval=1))
+    Tot_matrix=tf.transpose(tf.matmul(concat_output,matwh1),[0,3,2,1])
 
     t_concat = tf.expand_dims(Time_input_matrix, axis=1)
     # arranging the residual part in time to match the size of hidden layers:
