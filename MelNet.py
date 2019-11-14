@@ -86,22 +86,10 @@ def MelNET(dim_f, dim_t, hidden_layer=3, batch_norm=0):
     # Trainning parameters:
 
     mixture_num = 10  # Number of mixuture gaussians
-    ## Input output for net :
-    # dim_f = 32;
-    # dim_t = 50;
-    # hidden_layer = 10;
-    # batch_norm = 1
-    # spectrogram = np.expand_dims(Input_In[11,:],axis=0)
     spectrogram = Input(shape=(dim_f, dim_t))
-    # labels_spect = Input(shape=(dim_f, dim_t))
-
-    # spectrogram = tf.placeholder(shape=(None, dim_f, dim_t), dtype=tf.float32)
-    # labels_spect = tf.placeholder(shape=(None, dim_f, dim_t), dtype=tf.float32)
     ## an option is to padd with zeros instead rotating:
     # delay input Freq -> for input to FrequencyDelayedStack
     freq_input_matrix = tf.roll(spectrogram, shift=1, axis=1)
-    # plt.imshow(np.float32(np.squeeze(freq_input_matrix)))
-    # plt.imshow(np.float32(np.squeeze(spectrogram)))
     # delay input Time -> for input to TimeDelayedStack
     Time_input_matrix = tf.roll(spectrogram, shift=1, axis=2)
     # plt.imshow(np.float32(np.squeeze(Time_input_matrix)))
@@ -116,18 +104,10 @@ def MelNET(dim_f, dim_t, hidden_layer=3, batch_norm=0):
         concat_output = tf.keras.layers.BatchNormalization()(concat_output)
 
     # Define the matrics matmul weights variable:
-    # matwh1 = tf.Variable(shape=[dim_t, 3 * dim_t], dtype=tf.float32,
-    #                     initial_value=tf.random_uniform(shape=[dim_t, 3 * dim_t], minval=0, maxval=1))
     matwh1 = tf.Variable(shape=[3 * hidden_layer, hidden_layer], dtype=tf.float32,
                          initial_value=tf.ones(shape=[3 * hidden_layer, hidden_layer]))
     Tot_matrix = tf.transpose(tf.matmul(concat_output, matwh1), [0, 3, 2, 1])
     ##### Calculating over all hidden layers:
-    # vec = concat_output[:, :, :, 0]
-    # Tot_matrix = tf.expand_dims(tf.matmul(matwh1, vec), axis=1)
-    # for i in range(1, hidden_layer):
-    #    vec = concat_output[:, :, :, i]
-    #    output_mat = tf.expand_dims(tf.matmul(matwh1, vec), axis=1)
-    #    Tot_matrix = tf.concat([Tot_matrix, output_mat], axis=1)
 
     # arranging the residual part in time to match the size of hidden layers:
     t_concat = tf.expand_dims(tf.transpose(Time_input_matrix, [0, 2, 1]), axis=1)
@@ -140,27 +120,7 @@ def MelNET(dim_f, dim_t, hidden_layer=3, batch_norm=0):
     out_freq = FrequencyDelayedStack(freq_input_matrix, time_output, dim_f, dim_t, hidden_layer)
     if batch_norm == 1:
         out_freq = tf.keras.layers.BatchNormalization()(out_freq, training=True)
-    # matwh_miu = tf.Variable(shape=[dim_t, dim_t], dtype=tf.float32,
-    #                        initial_value=tf.random_uniform(shape=[dim_t, dim_t],minval=0, maxval=1) ,trainable=True)
-    # bias_miu = tf.Variable(shape=[dim_t], dtype=tf.float32,
-    #                        initial_value=tf.random_uniform(shape=[ dim_t], minval=0, maxval=1), trainable=True)
-    #
-    # out_put_final_miu = tf.expand_dims(tf.matmul(out_freq, matwh_miu)+bias_miu, axis=3)
-    # for i in range(3 * mixture_num - 1):
-    #    matwh_miu = tf.Variable(shape=[dim_t, dim_t], dtype=tf.float32,
-    #                            initial_value=tf.random_uniform(shape=[dim_t, dim_t], minval=0, maxval=1),
-    #                            trainable=True)
-    #    bias_miu = tf.Variable(shape=[dim_t], dtype=tf.float32,
-    #                           initial_value=tf.random_uniform(shape=[dim_t], minval=0, maxval=1), trainable=True)
-    #
-    #    out_put_final_miu = tf.concat([out_put_final_miu, tf.expand_dims(tf.matmul(out_freq, matwh_miu)+bias_miu, axis=3)],
-    #                             axis=3)
-    #
-    # out_put_final = tf.expand_dims(tf.transpose(tf.matmul(out_freq[:, 0, :], matwh2), [1, 0, 2]), axis=1)
-    # for i in range(1, dim_f, 1):
-    #    out_put_final = tf.concat(
-    #        [out_put_final, tf.expand_dims(tf.transpose(tf.matmul(out_freq[:, i, :], matwh2), [1, 0, 2]), axis=1)],
-    #        axis=1)
+
     ## Calculating mixture gaussian parameters :
     mu = Conv2D(filters=mixture_num, kernel_size=(1, 1), activation='relu', padding='same')(
         tf.expand_dims(out_freq, axis=3))
@@ -194,11 +154,9 @@ def MelNET(dim_f, dim_t, hidden_layer=3, batch_norm=0):
     tensor_out = Concatenate(axis=0)(
         [tf.expand_dims(alpha, axis=0), tf.expand_dims(mu, axis=0), tf.expand_dims(sigma, axis=0)])
     tensor_out = tf.transpose(tensor_out, [1, 0, 2, 3, 4])
-    # loss1 = gaussian_mixture_loss(labels_spect, tensor_out)
 
     model = Model(inputs=spectrogram, outputs=tensor_out)
-    # result = model.train_on_batch(x=Input_In[0:15, :], y=Input_In[0:15, :])
-
+    
     return model
 
 
@@ -260,12 +218,9 @@ def TimeDelayedStack(Time_input_matrix, Freq_timeStack_input, dim_f, dim_t, hidd
         time_vec_input = tf.expand_dims(Time_input_matrix[:, i, 0:dim_t], axis=1)
         out_time1_lstm = lstm_moudule_time(tf.transpose(time_vec_input, (0, 2, 1)))
         tot_hidden = Concatenate(axis=2)([tot_hidden, tf.expand_dims(out_time1_lstm[0], axis=2)])
-    # tot_hidden = tf.math.cumsum(tot_hidden, axis=2)
 
     # RNN 2 -> inverted frequency axis
     # summing over all frequency reveresed ->  shared weights outputs of the lstm :
-    # Freq_timeStack_input_fliped = tf.image.flip_left_right(tf.transpose(Freq_timeStack_input,[0,2,1]))
-    # Freq_timeStack_input_fliped =tf.transpose(Freq_timeStack_input_fliped,[0,2,1])
 
     freq_vec_input_flipped = tf.expand_dims(Freq_timeStack_input[:, 0, dim_f:None:-1], axis=1)
 
@@ -280,7 +235,6 @@ def TimeDelayedStack(Time_input_matrix, Freq_timeStack_input, dim_f, dim_t, hidd
         out_lstm_freq = lstm_freq_moudule_backward(tf.transpose(freq_vec_input_flipped, (0, 2, 1)))
         tot_hidden_freq_flipped = tf.concat([tot_hidden_freq_flipped, tf.expand_dims(out_lstm_freq[0], axis=2)],
                                             axis=2)
-        # tot_hidden_freq_flipped = tf.math.cumsum(tot_hidden_freq_flipped, axis=1)
 
     # RNN 3 -> frequency axis
     # summing over all frequency shared weights outputs of the lstm :
@@ -296,11 +250,8 @@ def TimeDelayedStack(Time_input_matrix, Freq_timeStack_input, dim_f, dim_t, hidd
 
         out_lstm_freq = lstm_freq_moudule_forward(tf.transpose(freq_vec_input, (0, 2, 1)))
         tot_hidden_freq = tf.concat([tot_hidden_freq, tf.expand_dims(out_lstm_freq[0], axis=2)], axis=2)
-    # tot_hidden_freq = tf.math.cumsum(tot_hidden_freq, axis=1)
     # Concatination of the 3 LSTMs outputs:
     tot_hidden = tf.transpose(tot_hidden, [0, 2, 1, 3])
-    # CONCAT_3_RNN_OUPUT = tf.transpose(tf.concat([tot_hidden, tot_hidden_freq_flipped, tot_hidden_freq], axis=2),
-    #                                  (0, 2, 1, 3))
     CONCAT_3_RNN_OUPUT = (tf.concat([tot_hidden, tot_hidden_freq_flipped, tot_hidden_freq], axis=3))
 
     return CONCAT_3_RNN_OUPUT
@@ -414,23 +365,7 @@ if __name__ == "__main__":
             plt.pause(0.1)
         col = col + 1
 
-        # input_show = np.zeros((np.shape(input_data2)))
-        # for ik in range(dim_t1 - col):
-        input_net = input_data2[:, :, 0:dim_t1]
-        out_tensor = model.predict(input_net)
-        plt.close()
-        output_from_Generation, output_from_Generation_batch = generating_from_disribution_new(out_tensor)
-        # params = sampling_gauss(out_tensor)
-        # output_from_Generation_batch = params.sample()
 
-        temp_amplitude = output_from_Generation_batch
-        temp_amplitude = output_from_Generation_batch[1:, :, :]
-        input_data2[:, :, col - 1] = temp_amplitude[:, :, col - 1]
-        input_show[:, :, col - 1] = temp_amplitude[:, :, col - 1]
-        plt.figure(2)
-        plt.imshow(input_show[0, :])
-        plt.pause(0.1)
-        col = col + 1
     # Gathering all the batches to 1 long sequence--> Viewing purposes
     new = np.zeros((dim_f1, dim_t1))
     for ii in range(batch_size1):
