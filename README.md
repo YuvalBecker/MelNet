@@ -57,6 +57,7 @@ def create_data_train -> get path to wav files folder and creates mel spectrogra
    
    def return_to_audio -> Receive a spectrogram and sampling rate, produces the audio signal.
    
+   def sampling_gauss -> sampling a distribution given tensor of gmm parameters. 
 
 
 ** At the moment the generation process takes a lot of time because  generation  is done pixel by pixel. In the next few weeks intend to improve efficiency.
