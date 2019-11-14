@@ -381,6 +381,8 @@ def create_data_train(folder_path):
         n_freq_components=n_mel_freq_components,
         start_freq=start_freq,
         end_freq=end_freq,
+        samplerate=rate
+
     )
     wav_spectrogram = pretty_spectrogram(
         data1.astype("float32"),
