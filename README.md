@@ -63,5 +63,3 @@ def create_data_train -> get path to wav files folder and creates mel spectrogra
 ** At the moment the generation process takes a lot of time because  generation  is done pixel by pixel. In the next few weeks intend to improve efficiency.
 The audio results from generation are very noisy -> intend to train the model over larger dataset for longer time and update the results.
 
-
-** working only on weekends, this is why the code isn't very organize. sorry about that. 
